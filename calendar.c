@@ -20,23 +20,17 @@
 #define ANSI_COLOR_CYAN    "\x1b[36m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
-//Calculating Date Today Using Macros Means You would need to recompile
-char* date_str = __DATE__;
-char month_str[4];
-char year_str[5];
+
 int monthToday;
 int yearToday;
+int dayToday;
 
-int getdayToday(){
-    char day_str[3];
-    strncpy(day_str, date_str + 4, 2);
-    day_str[2] = '\0';
-    strncpy(month_str, date_str, 3);
-    month_str[3] = '\0';
-    strncpy(year_str, date_str + 7, 4);
-    year_str[4] = '\0';
-    yearToday = atoi(year_str);
-    return atoi(day_str);
+void getdayToday(){
+    time_t now = time(NULL);
+    struct tm *t = localtime(&now);
+    yearToday = (t->tm_year) + 1900;
+    monthToday = (t->tm_mon) + 1;
+    dayToday = (t->tm_mday);
 }
 
 bool isLeapYear(int year){
@@ -59,12 +53,6 @@ char* getMonthName(int month){
     char *months[] = {"January", "February", "March", "April",
                       "May", "June", "July", "August",
                       "September","October","November","December"};
-    for(int i = 0 ; i < sizeof(months)/sizeof(months[0]) ; i++){
-        if(!strncmp(month_str,months[i],3)){
-            monthToday = i + 1;
-            break;
-        }
-    }
 
     return months[month];
 }
@@ -86,7 +74,8 @@ int printMonth(int daysInMonth, int startDayOfMonth , int monthNumber , int year
 
     printf("Mon  Tue  Wed  Thu  Fri  Sat  Sun\n");
 
-    int dayNumber = 1, dayToday = getdayToday();
+    getdayToday();
+    int dayNumber = 1;
     int daysPassed_PerWeek = 0;
     bool isFirstWeek = true;
 
@@ -99,7 +88,7 @@ int printMonth(int daysInMonth, int startDayOfMonth , int monthNumber , int year
         }
 
         isFirstWeek = false;
-        if(dayNumber == dayToday && monthToday == monthNumber && yearToday == year)
+        if(dayToday == dayNumber && monthToday == monthNumber && yearToday == year)
             printf(ANSI_COLOR_GREEN" %2d  "ANSI_COLOR_RESET,dayNumber++);
         else
             printf(" %2d  ",dayNumber++);
