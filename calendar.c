@@ -20,6 +20,7 @@
 #define ANSI_COLOR_CYAN    "\x1b[36m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
+//Calculating Date Today Using Macros Means You would need to recompile
 char* date_str = __DATE__;
 char month_str[4];
 char year_str[5];
