@@ -104,6 +104,14 @@ void printCalendar(int year){
 
 int main(void){
 
-    printCalendar(2025);
+    int get_year;
+    printf("Enter Year for Calendar: ");
+
+    if(scanf("%d",&get_year) != 1){
+        printf("ERROR: Invalid Input");
+        exit(EXIT_FAILURE);
+    }
+    printCalendar(get_year);
+
     exit(EXIT_SUCCESS);
 }
