@@ -7,9 +7,17 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<stdbool.h>
-#include<string.h>
+#include<time.h>
 
 #define MONTHS_IN_YEAR 12
+
+#define ANSI_COLOR_RED     "\x1b[31m"
+#define ANSI_COLOR_GREEN   "\x1b[32m"
+#define ANSI_COLOR_YELLOW  "\x1b[33m"
+#define ANSI_COLOR_BLUE    "\x1b[34m"
+#define ANSI_COLOR_MAGENTA "\x1b[35m"
+#define ANSI_COLOR_CYAN    "\x1b[36m"
+#define ANSI_COLOR_RESET   "\x1b[0m"
 
 int last_day_in_month = 0;
 
@@ -35,6 +43,19 @@ char* getMonthName(int month){
                       "September","October","November","December"};
 
     return months[month];
+}
+
+int getFirstDayOfYear(int year){
+    struct tm first_day_of_year = {0};
+    first_day_of_year.tm_year = year - 1900;
+    first_day_of_year.tm_mon = 0;
+    first_day_of_year.tm_mday = 1;
+
+    time_t rawTime = mktime(&first_day_of_year);
+
+    struct tm *localTime = localtime(&rawTime);
+
+    return localTime->tm_wday;
 }
 
 int printMonth(int daysInMonth, int startDayOfMonth){
@@ -69,10 +90,10 @@ int printMonth(int daysInMonth, int startDayOfMonth){
 
 void printCalendar(int year){
     int days_one_Month;
-    int Lastday_of_prevMonth = 0;
+    int Lastday_of_prevMonth = getFirstDayOfYear(year) - 1;
     printf("\n-------------------------------------\n");
     for(int i = 0; i < MONTHS_IN_YEAR ; i++){
-        printf("             %s                     ",getMonthName(i));
+        printf(ANSI_COLOR_CYAN"             %s                     "ANSI_COLOR_RESET ,getMonthName(i));
         printf("\n-------------------------------------\n");
         days_one_Month = numberOfDaysInMonth(year, i + 1);
         Lastday_of_prevMonth = printMonth(days_one_Month,Lastday_of_prevMonth);
