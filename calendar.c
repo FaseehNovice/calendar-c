@@ -8,6 +8,7 @@
 #include<stdlib.h>
 #include<stdbool.h>
 #include<time.h>
+#include<string.h>
 
 #define MONTHS_IN_YEAR 12
 
@@ -19,7 +20,23 @@
 #define ANSI_COLOR_CYAN    "\x1b[36m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
-int last_day_in_month = 0;
+char* date_str = __DATE__;
+char month_str[4];
+char year_str[5];
+int monthToday;
+int yearToday;
+
+int getdayToday(){
+    char day_str[3];
+    strncpy(day_str, date_str + 4, 2);
+    day_str[2] = '\0';
+    strncpy(month_str, date_str, 3);
+    month_str[3] = '\0';
+    strncpy(year_str, date_str + 7, 4);
+    year_str[4] = '\0';
+    yearToday = atoi(year_str);
+    return atoi(day_str);
+}
 
 bool isLeapYear(int year){
     return (year % 400 == 0 || (year % 4 == 0 && year % 100 != 0));
@@ -41,6 +58,12 @@ char* getMonthName(int month){
     char *months[] = {"January", "February", "March", "April",
                       "May", "June", "July", "August",
                       "September","October","November","December"};
+    for(int i = 0 ; i < sizeof(months)/sizeof(months[0]) ; i++){
+        if(!strncmp(month_str,months[i],3)){
+            monthToday = i + 1;
+            break;
+        }
+    }
 
     return months[month];
 }
@@ -58,11 +81,11 @@ int getFirstDayOfYear(int year){
     return localTime->tm_wday;
 }
 
-int printMonth(int daysInMonth, int startDayOfMonth){
+int printMonth(int daysInMonth, int startDayOfMonth , int monthNumber , int year){
 
     printf("Mon  Tue  Wed  Thu  Fri  Sat  Sun\n");
 
-    int dayNumber = 1;
+    int dayNumber = 1, dayToday = getdayToday();
     int daysPassed_PerWeek = 0;
     bool isFirstWeek = true;
 
@@ -75,7 +98,10 @@ int printMonth(int daysInMonth, int startDayOfMonth){
         }
 
         isFirstWeek = false;
-        printf(" %2d  ",dayNumber++);
+        if(dayNumber == dayToday && monthToday == monthNumber && yearToday == year)
+            printf(ANSI_COLOR_GREEN" %2d  "ANSI_COLOR_RESET,dayNumber++);
+        else
+            printf(" %2d  ",dayNumber++);
 
         daysPassed_PerWeek++;
         if(daysPassed_PerWeek == 7){
@@ -91,13 +117,13 @@ int printMonth(int daysInMonth, int startDayOfMonth){
 void printCalendar(int year){
     int days_one_Month;
     int Lastday_of_prevMonth = getFirstDayOfYear(year) - 1;
-    printf("\n-------------------------------------\n");
+    printf("\n----------------------------------\n");
     for(int i = 0; i < MONTHS_IN_YEAR ; i++){
-        printf(ANSI_COLOR_CYAN"             %s                     "ANSI_COLOR_RESET ,getMonthName(i));
-        printf("\n-------------------------------------\n");
+        printf(ANSI_COLOR_CYAN"              %s                    "ANSI_COLOR_RESET ,getMonthName(i));
+        printf("\n------------------------------------\n");
         days_one_Month = numberOfDaysInMonth(year, i + 1);
-        Lastday_of_prevMonth = printMonth(days_one_Month,Lastday_of_prevMonth);
-        printf("\n-------------------------------------\n");
+        Lastday_of_prevMonth = printMonth(days_one_Month,Lastday_of_prevMonth , i + 1 ,year);
+        printf("\n------------------------------------\n");
     }
 }
 
